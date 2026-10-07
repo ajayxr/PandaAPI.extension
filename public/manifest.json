@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "PandaAPI — CPF e CNPJ",
+  "description": "Confira dígitos verificadores de CPF/CNPJ e gere documentos para testes. Sem consulta à Receita Federal.",
+  "version": "0.1.0",
+  "minimum_chrome_version": "102",
+  "icons": {
+    "128": "icons/panda.png"
+  },
+  "permissions": [
+    "activeTab",
+    "clipboardRead",
+    "clipboardWrite",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://api.pandaapi.com.br/*"
+  ],
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
+  "action": {
+    "default_icon": {
+      "128": "icons/panda.png"
+    },
+    "default_title": "Validar ou gerar CPF/CNPJ",
+    "default_popup": "index.html"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+A"
+      },
+      "description": "Validar documento selecionado ou copiado"
+    }
+  }
+}

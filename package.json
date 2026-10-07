@@ -1,0 +1,20 @@
+{
+  "name": "pandaapi-extension",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "test": "node --test",
+    "check:package": "node scripts/check-package.js",
+    "verify": "npm test && npm run build && npm run check:package"
+  },
+  "dependencies": {
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "vite": "^6.1.0"
+  }
+}
