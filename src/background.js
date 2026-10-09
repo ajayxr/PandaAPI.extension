@@ -1,4 +1,5 @@
 import { createPandaApiClient } from './panda-api.js'
+import { PRIVACY_CONSENT_KEY, PRIVACY_CONSENT_VERSION } from './privacy.js'
 
 const TOKEN_STORAGE_KEY = 'guestAuth'
 
@@ -30,6 +31,33 @@ function readSelectionFromPage() {
 
   return window.getSelection()?.toString() ?? ''
 }
+
+function writeTextToClipboard(text) {
+  return navigator.clipboard.writeText(text).then(() => true, () => false)
+}
+
+chrome.commands.onCommand.addListener(async (command) => {
+  if (command !== 'copy-unformatted-document') return
+
+  const stored = await chrome.storage.local.get(PRIVACY_CONSENT_KEY)
+  if (stored[PRIVACY_CONSENT_KEY] !== PRIVACY_CONSENT_VERSION) return
+
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  if (!tab?.id) return
+
+  const [selection] = await chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    func: readSelectionFromPage,
+  })
+  const text = (selection?.result ?? '').replace(/[^p{L}p{N}]/gu, '')
+  if (!text) return
+
+  await chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    func: writeTextToClipboard,
+    args: [text],
+  })
+})
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message?.type === 'pandaapi:read-selection') {

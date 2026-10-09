@@ -34,6 +34,12 @@
         "default": "Alt+A"
       },
       "description": "Validar documento selecionado ou copiado"
+    },
+    "copy-unformatted-document": {
+      "suggested_key": {
+        "default": "Alt+Q"
+      },
+      "description": "Copiar seleção só com letras e números"
     }
   }
 }

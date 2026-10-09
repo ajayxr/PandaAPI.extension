@@ -459,6 +459,15 @@ h1 {
   color: #286346;
 }
 
+.formatting-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #77837a;
+  font-size: 11px;
+  cursor: pointer;
+}
+
 .footer-error {
   text-align: right;
 }

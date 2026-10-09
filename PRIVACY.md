@@ -1,6 +1,6 @@
 # Política de privacidade — PandaAPI Validador
 
-**Última atualização: 6 de outubro de 2026**
+**Última atualização: 9 de outubro de 2026**
 
 Esta política explica, em linguagem direta, quais dados a extensão trata e
 quando eles são enviados. A extensão é uma ferramenta independente: **não é
@@ -43,12 +43,15 @@ popup. Ao revogar, a extensão volta a pedir confirmação antes de ler dados.
 ## Dados tratados e finalidade
 
 - **Seleção da página e área de transferência:** após a confirmação, quando o
-  popup é aberto, a extensão tenta obter o texto selecionado na aba ativa. Se
+  popup é aberto ou o atalho Alt+Q é usado, a extensão tenta obter o texto
+  selecionado na aba ativa. Se
   não identificar um CPF/CNPJ nesse texto, tenta ler a área de transferência.
   Essa leitura existe apenas para oferecer a validação do documento solicitado.
   O texto completo é analisado localmente para encontrar um número reconhecido;
   somente o CPF/CNPJ normalizado é enviado à API, não o restante da página ou
-  da área de transferência.
+  da área de transferência. O atalho Alt+Q lê a seleção da mesma forma, mas não
+  valida o documento: copia para a área de transferência somente as letras e os
+  números do texto selecionado, sem pontuação, e não envia nada à API.
 - **CPF ou CNPJ para validação:** se a extensão reconhecer um número na seleção
   ou na área de transferência, envia-o automaticamente para validação. Também
   é possível digitá-lo e clicar em **Validar**. A extensão envia o número no
@@ -64,8 +67,10 @@ popup. Ao revogar, a extensão volta a pedir confirmação antes de ler dados.
   aproximada de cinco minutos. A extensão o mantém em `chrome.storage.session`
   e o usa somente para autenticar pedidos à API. Não o grava em armazenamento
   permanente.
-- **Confirmação de privacidade:** a extensão mantém em `chrome.storage.local`
-  apenas a versão do aviso aceita, para não exibi-lo a cada abertura.
+- **Preferências locais:** a extensão mantém em `chrome.storage.local` a versão
+  do aviso aceita, para não exibi-lo a cada abertura, e a preferência **Copiar sem
+  máscara** (`removeFormattingOnCopy`). Nenhuma delas contém CPF, CNPJ ou o texto
+  da área de transferência.
 - **Dados técnicos da conexão:** durante a comunicação, a API e os serviços
   de infraestrutura utilizados podem processar endereço IP, horário,
   navegador e informações relacionadas à requisição, necessários à conexão,
@@ -77,7 +82,8 @@ A extensão não cria histórico de consultas, não envia os documentos a servi�
 de publicidade ou analytics e não mantém uma cópia persistente dos números
 validados ou gerados. O texto e o resultado permanecem temporariamente na
 memória do popup; fechá-lo encerra essa apresentação. Um documento gerado só é
-copiado para a área de transferência se a pessoa clicar em **Copiar**.
+copiado para a área de transferência se a pessoa clicar em **Copiar**. Além disso,
+o atalho **Alt+Q** copia somente letras e números do texto selecionado, sem pontuação.
 
 Na revisão do código público da API, os endpoints de validação verificam o
 documento e retornam o resultado, sem gravá-lo em banco de dados como parte
@@ -96,7 +102,8 @@ As chamadas da extensão à API usam HTTPS. A extensão solicita apenas acesso �
 aba ativa, às funções de leitura/cópia da área de transferência, ao
 armazenamento necessário à sessão e à confirmação local, e ao domínio da API.
 Ela não instala um script permanente em todas as páginas. A leitura da
-seleção ocorre após a confirmação e quando a pessoa abre a extensão.
+seleção ocorre após a confirmação, quando a pessoa abre a extensão ou usa o
+atalho Alt+Q.
 
 ## Como interromper o uso e entrar em contato
 

@@ -1,9 +1,9 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { formatBrazilianDocument, parseBrazilianDocument } from './document.js'
+import { PRIVACY_CONSENT_KEY, PRIVACY_CONSENT_VERSION } from './privacy.js'
 
-const PRIVACY_CONSENT_KEY = 'privacyConsentVersion'
-const PRIVACY_CONSENT_VERSION = 1
+const REMOVE_FORMATTING_KEY = 'removeFormattingOnCopy'
 
 const mode = ref('validate')
 const hasPrivacyConsent = ref(false)
@@ -20,8 +20,14 @@ const generationStatus = ref('idle')
 const generatedDocument = ref('')
 const generationMessage = ref('')
 const copied = ref(false)
+const resultCopied = ref(false)
+const removeFormattingOnCopy = ref(false)
 
 const isLoading = ref(false)
+
+watch(removeFormattingOnCopy, (value) => {
+  chrome.storage.local.set({ [REMOVE_FORMATTING_KEY]: value })
+})
 
 async function validate() {
   if (isLoading.value) return
@@ -38,6 +44,7 @@ async function validate() {
   status.value = 'loading'
   message.value = ''
   resultDocument.value = formatBrazilianDocument(document)
+  resultCopied.value = false
 
   try {
     const response = await chrome.runtime.sendMessage({
@@ -97,11 +104,27 @@ async function generate() {
 
 async function copyGeneratedDocument() {
   try {
-    await navigator.clipboard.writeText(generatedDocument.value)
+    const textToCopy = removeFormattingOnCopy.value
+      ? generatedDocument.value.replace(/[\s.,\/-]/g, '')
+      : generatedDocument.value
+    await navigator.clipboard.writeText(textToCopy)
     copied.value = true
     generationMessage.value = 'Copiado para a área de transferência.'
   } catch {
     generationMessage.value = 'Não foi possível copiar. Selecione e copie o documento.'
+  }
+}
+async function copyResultDocument() {
+  const parsed = parseBrazilianDocument(resultDocument.value)
+  if (!parsed) return
+
+  try {
+    await navigator.clipboard.writeText(
+      removeFormattingOnCopy.value ? parsed.digits : resultDocument.value,
+    )
+    resultCopied.value = true
+  } catch {
+    message.value = 'Não foi possível copiar. Selecione e copie o documento.'
   }
 }
 
@@ -173,8 +196,9 @@ async function loadSelectionOrClipboard() {
 
 async function initialize() {
   try {
-    const stored = await chrome.storage.local.get(PRIVACY_CONSENT_KEY)
+    const stored = await chrome.storage.local.get([PRIVACY_CONSENT_KEY, REMOVE_FORMATTING_KEY])
     hasPrivacyConsent.value = stored[PRIVACY_CONSENT_KEY] === PRIVACY_CONSENT_VERSION
+    removeFormattingOnCopy.value = stored[REMOVE_FORMATTING_KEY] === true
   } catch {
     consentError.value = 'Não foi possível verificar a confirmação de privacidade.'
   } finally {
@@ -344,6 +368,14 @@ onMounted(initialize)
           <p class="result-title">{{ message }}</p>
           <p v-if="resultDocument" class="result-description">{{ resultDocument }}</p>
         </div>
+        <button
+          v-if="status === 'valid' || status === 'invalid'"
+          class="copy-button"
+          type="button"
+          @click="copyResultDocument"
+        >
+          {{ resultCopied ? 'Copiado' : 'Copiar' }}
+        </button>
       </template>
     </section>
     </template>
@@ -421,11 +453,18 @@ onMounted(initialize)
     <footer class="footer">
       <p>Sem histórico · geração sob demanda.</p>
       <div class="footer-actions">
+        <label class="formatting-option">
+          <input v-model="removeFormattingOnCopy" type="checkbox" />
+          Copiar sem máscara
+        </label>
         <button class="privacy-reset" type="button" @click="revokePrivacyConsent">
           Revogar
         </button>
         <div class="shortcut" aria-label="Atalho Alt mais A">
           <kbd>Alt</kbd><span>+</span><kbd>A</kbd>
+        </div>
+        <div class="shortcut" aria-label="Atalho Alt mais Q">
+          <kbd>Alt</kbd><span>+</span><kbd>Q</kbd>
         </div>
       </div>
     </footer>

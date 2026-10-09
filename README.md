@@ -69,14 +69,15 @@ atualizado enquanto os arquivos mudam; o navegador ainda precisa ser recarregado
 ## Permissões
 
 - `activeTab` e `scripting`: ler somente a seleção da aba ativa após abrir a
-  extensão, sem injetar scripts continuamente nas páginas.
+  extensão ou usar `Alt+Q`, sem injetar scripts continuamente nas páginas.
 - `clipboardRead`: permitir a validação quando o documento foi copiado, mas
   não selecionado no momento.
 - `clipboardWrite`: copiar o documento gerado somente depois que a pessoa
-  clicar em **Copiar**.
+  clicar em **Copiar**, e copiar somente letras e números do texto selecionado, sem
+  pontuação, quando usar `Alt+Q`.
 - `storage`: manter o token guest apenas em armazenamento de sessão.
-- `storage.local`: lembrar neste navegador a confirmação de privacidade. Esse
-  estado não sincroniza nem contém documentos.
+- `storage.local`: lembrar neste navegador a confirmação de privacidade e a
+  opção de copiar sem máscara. Esse estado não sincroniza nem contém documentos.
 - Acesso de host somente a `https://api.pandaapi.com.br/*`.
 
 O navegador pode impedir a leitura em páginas internas ou especiais. Nesses
@@ -92,7 +93,13 @@ enviado à API.
 
 ## Atalho
 
-O atalho inicial é `Alt+A`. O Chrome exige `Ctrl` ou `Alt` nos atalhos de
+Os atalhos são `Alt+A`, que valida o documento selecionado ou copiado, e
+`Alt+Q`, que copia somente letras e números do texto selecionado, sem pontuação.
+Ambos exigem a
+confirmação de privacidade. O checkbox **Copiar sem máscara**, no rodapé do
+popup, faz os botões **Copiar** da validação e da geração copiarem sem pontuação.
+
+O Chrome exige `Ctrl` ou `Alt` nos atalhos de
 extensões, por isso `Shift+C`, `Ctrl+V` e `Ctrl+Z` não podem ser registrados
 como atalhos da extensão. Para personalizar, abra
 `chrome://extensions/shortcuts` ou `edge://extensions/shortcuts`.
